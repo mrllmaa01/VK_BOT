@@ -1,3 +1,5 @@
 vk-api
 requests
 sdamgia-api
+os
+pytesserac
