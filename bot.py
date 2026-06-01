@@ -14,6 +14,24 @@ os.environ['TESSDATA_PREFIX'] = r"C:\Users\margo\AppData\Local\Programs\Tesserac
 sdamgia = SdamGIA()
 sdamgia.tesseract_src = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    server.serve_forever()
+
+# Запускаем веб-сервер в отдельном потоке
+web_thread = threading.Thread(target=run_web_server, daemon=True)
+web_thread.start()
+
 # === НАСТРОЙКИ ===
 TOKEN = "vk1.a.G_Y5wDm09tnERAMi3GBSMMGShBFnN8PDUpJglInz7cU4onqYYpztFVnDB5TH6u4MRb6WeiTREggbWndBgEyVr3guMu73yJInZdkQDzif_4bnsIQ8iN1jId_2E_taUxgU9uz6nzgTRMumF-Y3oP8kj1LPXWbAH6XbK-0Jb6ZNBJw58vA64na9LRsoSeTNHPFXWGxlMFyIoWKDWLuM6tleHw"
 GROUP_ID = 237869409
