@@ -1,4 +1,4 @@
 vk-api
 requests
 sdamgia-api
-pytesserac
+pytesseract
