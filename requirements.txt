@@ -2,3 +2,4 @@ vk-api
 requests
 sdamgia-api
 pytesseract
+Flask
