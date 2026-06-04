@@ -4,6 +4,8 @@ import json
 import random
 import re
 from sdamgia import SdamGIA
+from flask import Flask
+from threading import Thread
 
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
