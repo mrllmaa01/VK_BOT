@@ -8,6 +8,20 @@ from sdamgia import SdamGIA
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 import os
+
+# Создаем простое веб-приложение для проверки здоровья
+health_app = Flask(__name__)
+
+@health_app.route('/health')
+def health_check():
+    return "OK", 200
+
+def run_health_server():
+    port = int(os.environ.get("PORT", 10000))
+    health_app.run(host='0.0.0.0', port=port)
+
+# Запускаем сервер в отдельном потоке
+Thread(target=run_health_server, daemon=True).start()
 os.environ['TESSERACT_CMD'] = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 os.environ['TESSDATA_PREFIX'] = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tessdata"
 
