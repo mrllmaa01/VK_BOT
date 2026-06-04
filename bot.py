@@ -3,15 +3,20 @@ import time
 import json
 import random
 import re
-from sdamgia import SdamGIA
-from flask import Flask
-from threading import Thread
-
-import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 import os
+from threading import Thread
+from flask import Flask
+from sdamgia import SdamGIA
+import pytesseract
 
-# Создаем простое веб-приложение для проверки здоровья
+# Настройка Tesseract для работы на Render (без локальных путей Windows)
+# На Render Tesseract устанавливается через Dockerfile и доступен в PATH
+pytesseract.pytesseract.tesseract_cmd = "tesseract"
+
+sdamgia = SdamGIA()
+# Путь к Tesseract на Render не нужен, он уже в системе
+
+# === ВЕБ-СЕРВЕР ДЛЯ UPTIMEROBOT (работает и с HEAD, и с GET) ===
 health_app = Flask(__name__)
 
 @health_app.route('/health')
@@ -20,35 +25,13 @@ def health_check():
 
 def run_health_server():
     port = int(os.environ.get("PORT", 10000))
+    # Flask сам обрабатывает и GET, и HEAD запросы
     health_app.run(host='0.0.0.0', port=port)
 
-# Запускаем сервер в отдельном потоке
+# Запускаем веб-сервер в фоновом потоке
 Thread(target=run_health_server, daemon=True).start()
-os.environ['TESSERACT_CMD'] = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
-os.environ['TESSDATA_PREFIX'] = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tessdata"
 
-sdamgia = SdamGIA()
-sdamgia.tesseract_src = r"C:\Users\margo\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
-
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-def run_web_server():
-    port = int(os.environ.get("PORT", 10000))
-    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
-    server.serve_forever()
-
-# Запускаем веб-сервер в отдельном потоке
-web_thread = threading.Thread(target=run_web_server, daemon=True)
-web_thread.start()
-
-# === НАСТРОЙКИ ===
+# === ОСНОВНЫЕ НАСТРОЙКИ VK БОТА ===
 TOKEN = "vk1.a.G_Y5wDm09tnERAMi3GBSMMGShBFnN8PDUpJglInz7cU4onqYYpztFVnDB5TH6u4MRb6WeiTREggbWndBgEyVr3guMu73yJInZdkQDzif_4bnsIQ8iN1jId_2E_taUxgU9uz6nzgTRMumF-Y3oP8kj1LPXWbAH6XbK-0Jb6ZNBJw58vA64na9LRsoSeTNHPFXWGxlMFyIoWKDWLuM6tleHw"
 GROUP_ID = 237869409
 API_VERSION = "5.199"
@@ -69,7 +52,6 @@ SUBJECT_MAP = {
     "oge_eng": "eng",
     "ege_eng": "eng",
 }
-
 # ============================================================================
 # ПОЛНЫЙ СПРАВОЧНИК ЗАДАНИЙ (160 вопросов) - РЕЗЕРВНЫЕ ЗАДАНИЯ
 # ============================================================================
